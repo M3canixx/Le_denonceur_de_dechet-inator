@@ -13,7 +13,7 @@ import time
 import json
 
 tool = language_check.LanguageTool('en-US')
-driver=webdriver.Firefox()
+driver = webdriver.Firefox()
 
 
 def get_driver():
@@ -60,7 +60,7 @@ def get_commentary_list_from_amazon_url(url):
     driver.get(url)
     driver.execute_script("window.scrollTo(0, 100)")
     sleep(4)
-    scroll(wait, nbr_of_scroll=2)
+    scroll(wait, nbr_of_scroll=1)
     click_see_all_reviews(driver)
     return [element.text for element in
             driver.find_elements_by_xpath("//div[contains(@class,'a-section a-spacing-none review-views celwidget')]")]
@@ -69,10 +69,10 @@ def get_commentary_list_from_amazon_url(url):
 def get_table_amazon(comment_list):
     Amazon_Table = []
     for comment in comment_list:
-        text_list = comment.split("\n")
-        if len(text_list) < 4: continue
-        text_list = text_list[:-1]
-        commentary = "|".join(text_list[2:-1])
+        text_list = comment.split("\n")[:-2] # to get off "next page" and "previous page"
+        # if len(text_list) < 4: continue
+        # text_list = text_list[:-1]
+        commentary = "|".join(text_list)
         Amazon_Table.append(commentary)
     Amazon_Table_Split = Amazon_Table[0].split("|")
     with open('Amazon.json', 'w', encoding='utf8') as out:
@@ -89,6 +89,7 @@ def get_table_youtube(comment_list):
         Youtube_Table.append(commentary)
     with open('Youtube.json', 'w', encoding='utf8') as out:
         json.dump(Youtube_Table, out, indent=4, ensure_ascii=False)
+
 
 def display_mistakes(name):
     name_json = open(name + '.json', encoding='utf8')
@@ -128,7 +129,7 @@ def display():
     plt.show()
 
 
-def beautifulsoup():
+def beautifulsoup_Times():
     Times_Table = []
     reponse = get("https://www.nytimes.com/2021/05/07/style/elon-musk-memes.html")
 
@@ -157,10 +158,9 @@ def getReply_twitter(url):
     repList = []
     i = 0
     print(len(reptexts))
-    while i < 15:
-        texte = reptexts[i].text
+    for i in reptexts:
+        texte = i.text
         repList.append(texte)
-        i += 1
 
     with open('Twitter.json', 'w', encoding='utf8') as out:
         json.dump(repList, out, indent=4, ensure_ascii=False)
@@ -178,6 +178,6 @@ if __name__ == '__main__':
     comment_list = get_commentary_list_from_amazon_url(url)
     get_table_amazon(comment_list)
 
-    beautifulsoup()
+    beautifulsoup_Times()
 
     display()
