@@ -23,13 +23,8 @@ def get_driver():
 
 def scroll(wait, nbr_of_scroll=1, time_to_sleep=15):
     for _ in range(nbr_of_scroll):
-        # print("scroll")
         wait.until(EC.visibility_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.END)
         sleep(time_to_sleep)
-
-
-# def get_commentary_list(wait):
-#     return [comment.text for comment in wait.until(EC.presence_of_all_elements_located((By.ID, "comment")))]
 
 
 def accept_youtube_terms(driver):
@@ -43,7 +38,6 @@ def getReply_twitter(url):
 
     wait = WebDriverWait(driver, 15)
     scroll(wait, nbr_of_scroll=1)
-    # scroll(wait)
     scroll(wait)
     reptexts = driver.find_elements_by_xpath("//div[contains(@class,'css-901oao r-1fmj7o5 r-1qd0xha r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0')]")
 
@@ -51,7 +45,6 @@ def getReply_twitter(url):
 
     repList = []
     i = 0
-    # print(len(reptexts))
     for i in reptexts :
         texte = i.text
         repList.append(texte)
@@ -66,9 +59,7 @@ def get_commentary_list_from_youtube_url(url):
     wait = WebDriverWait(driver, 15)
     driver.get(url)
     accept_youtube_terms(driver)
-    # driver.execute_script("window.scrollTo(0, 100)")
     sleep(4)
-    # driver.execute_script("window.scrollTo(0, 100)")
     scroll(wait, nbr_of_scroll=3)
 
     return [element.text for element in driver.find_elements_by_id('comment')]
@@ -76,14 +67,12 @@ def get_commentary_list_from_youtube_url(url):
 
 def click_see_all_reviews(driver):
     driver.find_element_by_link_text('See all reviews').click()
-    #print('See all reviews')
 
 
 def get_commentary_list_from_amazon_url(url):
     driver = get_driver()
     wait = WebDriverWait(driver, 15)
     driver.get(url)
-    # driver.execute_script("window.scrollTo(0, 100)")
     sleep(4)
     scroll(wait, nbr_of_scroll=1)
     click_see_all_reviews(driver)
@@ -106,7 +95,6 @@ def get_table_youtube(comment_list):
     Youtube_Table = []
     for comment in comment_list:
         text_list = comment.split("\n")
-        # if len(text_list) < 4: continue
         text_list = text_list[:-1]
         commentary = "|".join(text_list[2:-1])
         Youtube_Table.append(commentary)
