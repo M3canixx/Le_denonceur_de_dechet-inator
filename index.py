@@ -13,7 +13,7 @@ import time
 import json
 
 tool = language_check.LanguageTool('en-US')
-driver = webdriver.Firefox()
+driver=webdriver.Firefox()
 
 
 def get_driver():
@@ -28,12 +28,37 @@ def scroll(wait, nbr_of_scroll=1, time_to_sleep=15):
         sleep(time_to_sleep)
 
 
-def get_commentary_list(wait):
-    return [comment.text for comment in wait.until(EC.presence_of_all_elements_located((By.ID, "comment")))]
+# def get_commentary_list(wait):
+#     return [comment.text for comment in wait.until(EC.presence_of_all_elements_located((By.ID, "comment")))]
 
 
 def accept_youtube_terms(driver):
     driver.find_element_by_tag_name('button').click()
+
+
+def getReply_twitter(url):
+    driver.get(url)
+
+    time.sleep(5)
+
+    wait = WebDriverWait(driver, 15)
+    scroll(wait, nbr_of_scroll=1)
+    # scroll(wait)
+    scroll(wait)
+    reptexts = driver.find_elements_by_xpath("//div[contains(@class,'css-901oao r-1fmj7o5 r-1qd0xha r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0')]")
+
+    time.sleep(3)
+
+    repList = []
+    i = 0
+    # print(len(reptexts))
+    for i in reptexts :
+        texte = i.text
+        repList.append(texte)
+
+    with open('Twitter.json', 'w', encoding='utf8') as out:
+        json.dump(repList, out, indent=4, ensure_ascii=False)
+
 
 
 def get_commentary_list_from_youtube_url(url):
@@ -41,9 +66,9 @@ def get_commentary_list_from_youtube_url(url):
     wait = WebDriverWait(driver, 15)
     driver.get(url)
     accept_youtube_terms(driver)
-    driver.execute_script("window.scrollTo(0, 100)")
+    # driver.execute_script("window.scrollTo(0, 100)")
     sleep(4)
-    driver.execute_script("window.scrollTo(0, 100)")
+    # driver.execute_script("window.scrollTo(0, 100)")
     scroll(wait, nbr_of_scroll=3)
 
     return [element.text for element in driver.find_elements_by_id('comment')]
@@ -51,14 +76,14 @@ def get_commentary_list_from_youtube_url(url):
 
 def click_see_all_reviews(driver):
     driver.find_element_by_link_text('See all reviews').click()
-    print('See all reviews')
+    #print('See all reviews')
 
 
 def get_commentary_list_from_amazon_url(url):
     driver = get_driver()
     wait = WebDriverWait(driver, 15)
     driver.get(url)
-    driver.execute_script("window.scrollTo(0, 100)")
+    # driver.execute_script("window.scrollTo(0, 100)")
     sleep(4)
     scroll(wait, nbr_of_scroll=1)
     click_see_all_reviews(driver)
@@ -70,8 +95,6 @@ def get_table_amazon(comment_list):
     Amazon_Table = []
     for comment in comment_list:
         text_list = comment.split("\n")[:-2] # to get off "next page" and "previous page"
-        # if len(text_list) < 4: continue
-        # text_list = text_list[:-1]
         commentary = "|".join(text_list)
         Amazon_Table.append(commentary)
     Amazon_Table_Split = Amazon_Table[0].split("|")
@@ -83,13 +106,12 @@ def get_table_youtube(comment_list):
     Youtube_Table = []
     for comment in comment_list:
         text_list = comment.split("\n")
-        if len(text_list) < 4: continue
+        # if len(text_list) < 4: continue
         text_list = text_list[:-1]
         commentary = "|".join(text_list[2:-1])
         Youtube_Table.append(commentary)
     with open('Youtube.json', 'w', encoding='utf8') as out:
         json.dump(Youtube_Table, out, indent=4, ensure_ascii=False)
-
 
 def display_mistakes(name):
     name_json = open(name + '.json', encoding='utf8')
@@ -129,7 +151,7 @@ def display():
     plt.show()
 
 
-def beautifulsoup_Times():
+def beautifulsoup_times():
     Times_Table = []
     reponse = get("https://www.nytimes.com/2021/05/07/style/elon-musk-memes.html")
 
@@ -141,29 +163,6 @@ def beautifulsoup_Times():
 
     with open('Times.json', 'w', encoding='utf8') as out:
         json.dump(Times_Table, out, indent=4, ensure_ascii=False)
-
-
-def getReply_twitter(url):
-    driver.get(url)
-
-    time.sleep(5)
-
-    wait = WebDriverWait(driver, 15)
-    scroll(wait)
-    scroll(wait)
-    reptexts = driver.find_elements_by_xpath("//div[contains(@class,'css-901oao r-1fmj7o5 r-1qd0xha r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0')]")
-
-    time.sleep(3)
-
-    repList = []
-    i = 0
-    print(len(reptexts))
-    for i in reptexts:
-        texte = i.text
-        repList.append(texte)
-
-    with open('Twitter.json', 'w', encoding='utf8') as out:
-        json.dump(repList, out, indent=4, ensure_ascii=False)
 
 
 if __name__ == '__main__':
@@ -178,6 +177,6 @@ if __name__ == '__main__':
     comment_list = get_commentary_list_from_amazon_url(url)
     get_table_amazon(comment_list)
 
-    beautifulsoup_Times()
+    beautifulsoup_times()
 
     display()
